@@ -1,8 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
-import Dashboard from "./components/Dashboard";
 import { ThemeProvider } from "./components/theme-provider";
-import Home from "./components/Home";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -13,19 +11,38 @@ import { useMemo } from "react";
 import { clusterApiUrl } from "@solana/web3.js";
 import { RecoilRoot } from "recoil";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
+import Layout from "./components/Layout";
+import Home from "./pages/Home";
+import MyDrive from "./pages/MyDrive";
+import SharedWithMe from "./pages/SharedWithMe";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <LandingPage />,
   },
   {
     path: "/dashboard",
     element: (
       <ProtectedRoute>
-        <Dashboard />
+        <Layout />
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: "/dashboard/",
+        element: <Home />,
+      },
+      {
+        path: "/dashboard/my-drive",
+        element: <MyDrive />,
+      },
+      {
+        path: "/dashboard/shared-with-me",
+        element: <SharedWithMe />,
+      },
+    ],
   },
 ]);
 window.Buffer = Buffer;

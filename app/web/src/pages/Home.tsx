@@ -4,8 +4,6 @@ import {
   FolderPlus,
   SlashIcon,
 } from "lucide-react";
-import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
 import {
   Menubar,
   MenubarContent,
@@ -13,14 +11,14 @@ import {
   MenubarMenu,
   MenubarSeparator,
   MenubarTrigger,
-} from "./ui/menubar";
+} from "../components/ui/menubar";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "./ui/breadcrumb";
+} from "../components/ui/breadcrumb";
 import {
   TableHeader,
   TableRow,
@@ -28,7 +26,7 @@ import {
   TableBody,
   TableCell,
   Table,
-} from "./ui/table";
+} from "../components/ui/table";
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -43,14 +41,14 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "./ui/context-menu";
+} from "../components/ui/context-menu";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { anchorWalletState } from "@/store/wallet_provider";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "../components/ui/scroll-area";
 
-const Body = () => {
+const Home = () => {
   const setAnchorWallet = useSetRecoilState(anchorWalletState);
   const anchorWallet = useAnchorWallet();
   useEffect(() => {
@@ -168,19 +166,4 @@ const Body = () => {
   );
 };
 
-const Dashboard = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div>
-        <Sidebar />
-        <div className="flex h-screen flex-col">
-          <Navbar />
-
-          <Body />
-        </div>
-      </div>
-    </Suspense>
-  );
-};
-
-export default Dashboard;
+export default Home;

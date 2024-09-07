@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
   useEffect(() => {
     if (!wallet.connected) {
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [wallet, navigate]);
   return children;

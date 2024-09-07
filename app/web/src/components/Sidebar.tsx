@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Sidebar = () => {
   return (
     <aside
@@ -8,28 +10,28 @@ const Sidebar = () => {
       <div className="h-full px-3 pb-4 overflow-y-auto ">
         <ul className="space-y-2 font-medium">
           <li>
-            <a
-              // href="#"
+            <Link
+              to={"/dashboard/"}
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-secondary dark:hover:bg-secondary group"
             >
               <span className="ms-3">Home</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              // href="#"
+            <Link
+              to={"/dashboard/my-drive"}
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-secondary dark:hover:bg-secondary group"
             >
               <span className="ms-3">My Drive</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
-              // href="#"
+            <Link
+              to={"/dashboard/shared-with-me"}
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-secondary dark:hover:bg-secondary group"
             >
               <span className="ms-3">Shared with me</span>
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

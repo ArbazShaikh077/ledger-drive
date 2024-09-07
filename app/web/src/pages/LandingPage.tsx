@@ -4,7 +4,7 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Home() {
+function LandingPage() {
   const wallet = useWallet();
   const navigate = useNavigate();
   useEffect(() => {
@@ -23,4 +23,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default LandingPage;
