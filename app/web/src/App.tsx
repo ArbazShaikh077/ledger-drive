@@ -7,15 +7,16 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { clusterApiUrl } from "@solana/web3.js";
 import { RecoilRoot } from "recoil";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import LandingPage from "./pages/LandingPage";
-import Layout from "./components/Layout";
-import Home from "./pages/Home";
-import MyDrive from "./pages/MyDrive";
-import SharedWithMe from "./pages/SharedWithMe";
+
+const SharedWithMe = lazy(() => import("./pages/SharedWithMe"));
+const MyDrive = lazy(() => import("./pages/MyDrive"));
+const Home = lazy(() => import("./pages/Home"));
+const Layout = lazy(() => import("./components/Layout"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,9 @@ function App() {
           <WalletProvider wallets={wallets} autoConnect>
             <WalletModalProvider>
               <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <RouterProvider router={router} />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <RouterProvider router={router} />
+                </Suspense>
               </ThemeProvider>
             </WalletModalProvider>
           </WalletProvider>
