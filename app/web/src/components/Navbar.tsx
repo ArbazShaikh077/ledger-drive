@@ -1,13 +1,12 @@
 import { SidebarCloseIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
-// import { program } from '@/anchor/setup';
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
 import { useRecoilValue } from "recoil";
 import { programState } from "@/store/wallet_provider";
-
-// import {  useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import "@solana/wallet-adapter-react-ui/styles.css";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -98,52 +97,74 @@ const Navbar = () => {
 
         {/* End Sidebar */}
       </nav>
-      <div className="fixed top-0 left-0 inset-x-0 sm:ml-64 border-b-2 p-4 bg-background z-[999]">
-        <div className="flex justify-end ">
-          <div className="">
+      <div className="fixed top-0 left-0 inset-x-0 sm:ml-64 border-b-2 pl-4 pr-4 pt-4 pb-2  bg-cyan z-[1000]">
+        <div className="flex content-center justify-end">
+          <div className="flex content-center space-x-3">
             <Button
+              className="h-[30px]"
               onClick={async () => {
-                const [userAccount] = PublicKey.findProgramAddressSync(
-                  [
-                    Buffer.from("user_account"),
-                    anchorWallet!.publicKey!.toBuffer(),
-                  ],
-                  program!.programId
-                );
-                //                             const [rootFolder] = PublicKey.findProgramAddressSync(
-                //                                 [Buffer.from("root_folder"),anchorWallet!.publicKey!.toBuffer()],
-                //                                 programId,
-                //                             );
+                console.log(anchorWallet!.publicKey!.toString());
+                // const [userAccount] = PublicKey.findProgramAddressSync(
+                //   [
+                //     Buffer.from("user_account"),
+                //     anchorWallet!.publicKey!.toBuffer(),
+                //   ],
+                //   program!.programId
+                // );
+                // const [rootFolder] = PublicKey.findProgramAddressSync(
+                //   [
+                //     Buffer.from("root_folder"),
+                //     anchorWallet!.publicKey!.toBuffer(),
+                //   ],
+                //   program!.programId
+                // );
 
-                //                             const transaction = await program.methods.initializeUser().accounts({
-                //                                     rootFolder: rootFolder,
-                //                                     user: anchorWallet!.publicKey!,
-                //                                     userAccount: userAccount,
-                //                                 }).rpc();
-                //                             //   const sign = await anchorWallet!.signTransaction(transaction);
-                //    console.log(
-                //     `View on explorer: https://solana.fm/tx/${transaction}?cluster=devnet-alpha`,
-                //   );
-                const response = await program!.account.userAccount.fetch(
-                  userAccount
-                );
+                // const transaction = await program!.methods
+                //   .initializeUser()
+                //   .accounts({
+                //     rootFolder: rootFolder,
+                //     user: anchorWallet!.publicKey!,
+                //     userAccount: userAccount,
+                //   })
+                //   .rpc();
+                // //   const sign = await anchorWallet!.signTransaction(transaction);
+                // console.log(
+                //   `View on explorer: https://solana.fm/tx/${transaction}?cluster=devnet-alpha`
+                // );
+                const response = await program!.account.userAccount.all();
 
                 console.log(`All users is ${JSON.stringify(response)}`);
               }}
             >
               Initialize Account
             </Button>
-            {/* <button
-                                    type="button"
-                                    className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                                >
-                                    <span className="sr-only">Open user menu</span>
-                                    <img
-                                        className="w-8 h-8 rounded-full"
-                                        src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                                        alt="user photo"
-                                    />
-                                </button> */}
+            <WalletMultiButton
+              style={{
+                backgroundColor: "white",
+                color: "black",
+                height: "30px",
+                fontSize: "15px",
+                fontWeight: "500",
+                borderRadius: "5px",
+              }}
+            />
+            {anchorWallet?.publicKey !== undefined ? (
+              <Avatar>
+                <AvatarImage
+                  src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${anchorWallet?.publicKey}`}
+                  alt="@shadcn"
+                  style={{
+                    verticalAlign: "middle",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "50%",
+                  }}
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
