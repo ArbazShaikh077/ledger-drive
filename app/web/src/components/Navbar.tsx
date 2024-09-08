@@ -7,11 +7,14 @@ import { programState } from "@/store/wallet_provider";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { PublicKey } from "@solana/web3.js";
+import { accountStateProvider } from "@/store/account_provider";
 
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const anchorWallet = useAnchorWallet();
   const program = useRecoilValue(programState);
+  const account_status = useRecoilValue(accountStateProvider);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -100,44 +103,50 @@ const Navbar = () => {
       <div className="fixed top-0 left-0 inset-x-0 sm:ml-64 border-b-2 pl-4 pr-4 pt-4 pb-2  bg-cyan z-[1000]">
         <div className="flex content-center justify-end">
           <div className="flex content-center space-x-3">
-            <Button
-              className="h-[30px]"
-              onClick={async () => {
-                console.log(anchorWallet!.publicKey!.toString());
-                // const [userAccount] = PublicKey.findProgramAddressSync(
-                //   [
-                //     Buffer.from("user_account"),
-                //     anchorWallet!.publicKey!.toBuffer(),
-                //   ],
-                //   program!.programId
-                // );
-                // const [rootFolder] = PublicKey.findProgramAddressSync(
-                //   [
-                //     Buffer.from("root_folder"),
-                //     anchorWallet!.publicKey!.toBuffer(),
-                //   ],
-                //   program!.programId
-                // );
+            {!account_status && anchorWallet?.publicKey ? (
+              <Button
+                className="h-[30px]"
+                onClick={async () => {
+                  console.log(anchorWallet!.publicKey!.toString());
+                  const [userAccount] = PublicKey.findProgramAddressSync(
+                    [
+                      Buffer.from("user_account"),
+                      anchorWallet!.publicKey!.toBuffer(),
+                    ],
+                    program!.programId
+                  );
+                  // const [rootFolder] = PublicKey.findProgramAddressSync(
+                  //   [
+                  //     Buffer.from("root_folder"),
+                  //     anchorWallet!.publicKey!.toBuffer(),
+                  //   ],
+                  //   program!.programId
+                  // );
 
-                // const transaction = await program!.methods
-                //   .initializeUser()
-                //   .accounts({
-                //     rootFolder: rootFolder,
-                //     user: anchorWallet!.publicKey!,
-                //     userAccount: userAccount,
-                //   })
-                //   .rpc();
-                // //   const sign = await anchorWallet!.signTransaction(transaction);
-                // console.log(
-                //   `View on explorer: https://solana.fm/tx/${transaction}?cluster=devnet-alpha`
-                // );
-                const response = await program!.account.userAccount.all();
+                  // const transaction = await program!.methods
+                  //   .initializeUser()
+                  //   .accounts({
+                  //     rootFolder: rootFolder,
+                  //     user: anchorWallet!.publicKey!,
+                  //     userAccount: userAccount,
+                  //   })
+                  //   .rpc();
+                  // //   const sign = await anchorWallet!.signTransaction(transaction);
+                  // console.log(
+                  //   `View on explorer: https://solana.fm/tx/${transaction}?cluster=devnet-alpha`
+                  // );
+                  const response = await program!.account.userAccount.fetch(
+                    userAccount
+                  );
 
-                console.log(`All users is ${JSON.stringify(response)}`);
-              }}
-            >
-              Initialize Account
-            </Button>
+                  console.log(`All users is ${JSON.stringify(response)}`);
+                }}
+              >
+                Initialize Account
+              </Button>
+            ) : (
+              <></>
+            )}
             <WalletMultiButton
               style={{
                 backgroundColor: "white",
