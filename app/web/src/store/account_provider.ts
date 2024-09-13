@@ -1,15 +1,10 @@
 import { atom, selector } from "recoil";
 import { anchorWalletState, programState } from "./wallet_provider";
 import { PublicKey } from "@solana/web3.js";
+import { userAccount } from "@/anchor/setup";
 
-// Atom for holding the connection
-export const accountState = atom<boolean>({
-  key: "account_state",
-  default: false,
-});
-
-// Atom for holding the provider
-export const accountStateProvider = selector<boolean>({
+// Selector for fetching the user account
+export const accountStateSelector = selector<userAccount | null>({
   key: "account_state_selector",
   get: async ({ get }) => {
     try {
@@ -19,23 +14,26 @@ export const accountStateProvider = selector<boolean>({
 
       if (!anchorWallet || !program) {
         console.log("Wallet or program is null");
-        return false;
+        return null;
       }
       const [userAccount] = PublicKey.findProgramAddressSync(
         [Buffer.from("user_account"), anchorWallet!.publicKey!.toBuffer()],
         program!.programId
       );
       const response = await program!.account.userAccount.fetch(userAccount);
-      console.log(response);
-      if (response) {
-        return true;
-      }
-      return false;
+
+      return response;
     } catch (e) {
       console.log(
         `Exception occurred while checking the user account initialization ${e}`
       );
-      return false;
+      return null;
     }
   },
+});
+
+// Atom for holding the account state
+export const accountState = atom<userAccount | null>({
+  key: "account_state",
+  default: accountStateSelector,
 });
