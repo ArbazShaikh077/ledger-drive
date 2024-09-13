@@ -1,12 +1,10 @@
-import { FileUpIcon, FolderPlus } from "lucide-react";
 import {
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  Table,
-} from "../components/ui/table";
+  FileTextIcon,
+  FileUpIcon,
+  FolderIcon,
+  FolderPlus,
+  MoreVerticalIcon,
+} from "lucide-react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -15,58 +13,145 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "../components/ui/context-menu";
-import { ScrollArea } from "../components/ui/scroll-area";
 import FolderNavigator from "@/components/FolderNavigator";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useRecoilValue } from "recoil";
+import { accountState } from "@/store/account_provider";
+import InitializeAccount from "@/components/InitializeAccount";
+import ConnectYourWallet from "@/components/ConnectWallet";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+
+const fileTypes = [
+  "pdf",
+  "doc",
+  "xls",
+  "ppt",
+  "txt",
+  "jpg",
+  "png",
+  "mp3",
+  "mp4",
+];
+const folderNames = [
+  "Documents",
+  "Pictures",
+  "Videos",
+  "Music",
+  "Projects",
+  "Backups",
+  "Work",
+  "Personal",
+  "Downloads",
+  "Shared",
+];
+
+const dummyItems = Array.from({ length: 50 }, (_, index) => {
+  if (index % 5 === 0) {
+    return {
+      type: "folder",
+      name: `${folderNames[Math.floor(Math.random() * folderNames.length)]} ${
+        index + 1
+      }`,
+      size: "--",
+      lastModified: new Date(
+        Date.now() - Math.random() * 10000000000
+      ).toLocaleDateString(),
+    };
+  } else {
+    const fileType = fileTypes[Math.floor(Math.random() * fileTypes.length)];
+    return {
+      type: "file",
+      name: `File ${index + 1}.${fileType}`,
+      size: `${Math.floor(Math.random() * 1000)} KB`,
+      lastModified: new Date(
+        Date.now() - Math.random() * 10000000000
+      ).toLocaleDateString(),
+    };
+  }
+});
 
 const Home = () => {
+  const anchorWallet = useAnchorWallet();
+  const account_status = useRecoilValue(accountState);
+
   return (
-    <div className="sm:ml-64 mt-16 flex flex-1 border no-scrollbar overflow-y-auto">
-      <FolderNavigator />
-      <ContextMenu>
-        <div className="w-full mt-16 items-center flex flex-col justify-center flex-1 pl-4 pr-4 no-scrollbar overflow-y-auto">
-          <ContextMenuTrigger className="w-full flex flex-col flex-1">
-            <ScrollArea
-              type="always"
-              className="w-full rounded-md border overflow-x-auto h-[600px]"
-            >
-              <Table className="items-center justify-center mb-4 rounded overflow-clip">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Name</TableHead>
-                    <TableHead>Owner</TableHead>
-                    <TableHead>Created at</TableHead>
-                    <TableHead className="text-right">File size</TableHead>
-                  </TableRow>
-                </TableHeader>
+    <>
+      {anchorWallet?.publicKey === undefined ? (
+        <ConnectYourWallet />
+      ) : !account_status ? (
+        <InitializeAccount />
+      ) : (
+        <main className="flex-1 overflow-x-auto overflow-y-auto bg-background px-4">
+          <div className="sticky top-0 z-10 bg-background shadow-sm">
+            <div className="py-4">
+              <FolderNavigator />
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[50%]">Name</TableHead>
+                  <TableHead className="w-[20%]">Size</TableHead>
+                  <TableHead className="w-[25%]">Last modified</TableHead>
+                  <TableHead className="w-[5%]"></TableHead>
+                </TableRow>
+              </TableHeader>
+            </Table>
+          </div>
+          <ContextMenu>
+            <ContextMenuTrigger className="w-full flex flex-col flex-1">
+              <Table>
                 <TableBody>
-                  {Array.from(Array(20).keys()).map((invoice) => (
-                    <TableRow key={invoice}>
-                      <TableCell className="font-medium">Name</TableCell>
-                      <TableCell>Me</TableCell>
-                      <TableCell>19 august, 2024</TableCell>
-                      <TableCell className="text-right">899.1 MB</TableCell>
+                  {dummyItems.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium w-[50%]">
+                        <div className="flex">
+                          {item.type === "folder" ? (
+                            <FolderIcon className="h-5 w-5 text-blue-500 mr-2" />
+                          ) : (
+                            <FileTextIcon className="h-5 w-5 text-primary mr-2" />
+                          )}
+                          {item.name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="w-[20%]">{item.size}</TableCell>
+                      <TableCell className="w-[25%]">
+                        {item.lastModified}
+                      </TableCell>
+                      <TableCell className="w-[5%]">
+                        <Button variant="ghost" size="icon">
+                          <MoreVerticalIcon className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </ScrollArea>
-          </ContextMenuTrigger>
-        </div>
-        <ContextMenuContent className="w-64">
-          <ContextMenuItem>
-            <FileUpIcon className="mr-1 h-4" />
-            File upload
-            <ContextMenuShortcut>⌘[</ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem>
-            <FolderPlus className="mr-2 h-4" />
-            New folder
-            <ContextMenuShortcut>⌘[</ContextMenuShortcut>
-          </ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-    </div>
+              <ContextMenuContent className="w-64">
+                <ContextMenuItem>
+                  <FileUpIcon className="mr-1 h-4" />
+                  File upload
+                  <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem>
+                  <FolderPlus className="mr-2 h-4" />
+                  New folder
+                  <ContextMenuShortcut>⌘[</ContextMenuShortcut>
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenuTrigger>
+          </ContextMenu>
+        </main>
+      )}
+    </>
   );
 };
 
