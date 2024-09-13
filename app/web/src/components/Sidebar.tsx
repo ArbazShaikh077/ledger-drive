@@ -2,13 +2,12 @@ import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
-    <aside
-      id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full  border-r-2 border-secondary sm:translate-x-0"
-      aria-label="Sidebar"
-    >
-      <div className="h-full px-3 pb-4 overflow-y-auto ">
-        <ul className="space-y-2 font-medium">
+    <aside className="w-60 h-screen overflow-y-auto flex-shrink-0 border-r">
+      <div className="flex items-center p-4 h-16 border-b">
+        <h1 className="text-2xl font-semibold ">Ledger Drive</h1>
+      </div>
+      <nav className="p-4">
+        <ul className="space-y-2">
           <li>
             <Link
               to={"/dashboard/"}
@@ -34,7 +33,7 @@ const Sidebar = () => {
             </Link>
           </li>
         </ul>
-      </div>
+      </nav>
     </aside>
   );
 };
