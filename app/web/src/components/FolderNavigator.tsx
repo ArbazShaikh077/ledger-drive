@@ -22,7 +22,7 @@ import {
 
 function FolderNavigator() {
   return (
-    <div className="p-3 pl-2 w-full fixed z-50 bg-background">
+    <>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -54,7 +54,7 @@ function FolderNavigator() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-    </div>
+    </>
   );
 }
 
