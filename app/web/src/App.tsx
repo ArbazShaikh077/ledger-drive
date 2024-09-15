@@ -11,6 +11,8 @@ import { lazy, Suspense, useMemo } from "react";
 import { clusterApiUrl } from "@solana/web3.js";
 import { RecoilRoot } from "recoil";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import { Toaster } from "./components/ui/toaster";
+import { ToastProvider } from "./store/toast";
 
 const SharedWithMe = lazy(() => import("./pages/SharedWithMe"));
 const MyDrive = lazy(() => import("./pages/MyDrive"));
@@ -56,15 +58,17 @@ function App() {
     <>
       <ConnectionProvider endpoint={endpoint}>
         <RecoilRoot>
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>
-              <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <Suspense fallback={<div>Loading...</div>}>
-                  <RouterProvider router={router} />
-                </Suspense>
-              </ThemeProvider>
-            </WalletModalProvider>
-          </WalletProvider>
+          <ToastProvider>
+            <WalletProvider wallets={wallets} autoConnect>
+              <WalletModalProvider>
+                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <RouterProvider router={router} />
+                  </Suspense>
+                </ThemeProvider>
+              </WalletModalProvider>
+            </WalletProvider>
+          </ToastProvider>
         </RecoilRoot>
       </ConnectionProvider>
     </>
