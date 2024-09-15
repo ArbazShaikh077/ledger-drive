@@ -1,71 +1,13 @@
+import { useCreateAndSetUserAccount } from "@/store/account_provider";
 import { Button } from "./ui/button";
 import { Vortex } from "./Vortex";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { anchorWalletState, programState } from "@/store/wallet_provider";
-import { PublicKey } from "@solana/web3.js";
-import { accountState } from "@/store/account_provider";
-import { useCallback } from "react";
 
 function InitializeAccount() {
-  const program = useRecoilValue(programState);
-  const anchorWalletStateProvider = useRecoilValue(anchorWalletState);
-  const userAccountState = useSetRecoilState(accountState);
-  const initializeUser = useCallback(async () => {
-    try {
-      const [userAccount] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_account"),
-          anchorWalletStateProvider!.publicKey!.toBuffer(),
-        ],
-        program!.programId
-      );
-      const [rootFolder] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("root_folder"),
-          anchorWalletStateProvider!.publicKey!.toBuffer(),
-        ],
-        program!.programId
-      );
-      const transaction = await program!.methods
-        .initializeUser()
-        .accounts({
-          rootFolder: rootFolder,
-          user: anchorWalletStateProvider!.publicKey!,
-          userAccount: userAccount,
-        })
-        .rpc();
-      console.log(
-        `Successfully completed the transaction with id : ${transaction}`
-      );
-    } catch (e) {
-      console.log("Exception occured while initializing the user account");
-    }
-  }, [anchorWalletStateProvider, program]);
+  const createAndSetUserAccount = useCreateAndSetUserAccount();
 
-  const setUserAccount = useCallback(async () => {
-    try {
-      console.log("Inside the account setter");
-      if (!anchorWalletStateProvider || !program) {
-        console.log("Wallet or program is null");
-        return;
-      }
-      const [userAccount] = PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("user_account"),
-          anchorWalletStateProvider!.publicKey!.toBuffer(),
-        ],
-        program!.programId
-      );
-      const response = await program!.account.userAccount.fetch(userAccount);
-      userAccountState(response);
-    } catch (e) {
-      console.log(
-        `Exception occurred while checking the user account initialization ${e}`
-      );
-      return;
-    }
-  }, [anchorWalletStateProvider, program, userAccountState]);
-
+  const handleCreateAccount = async () => {
+    await createAndSetUserAccount();
+  };
   return (
     <div className="flex flex-1 items-center justify-center">
       <Vortex
@@ -92,10 +34,7 @@ function InitializeAccount() {
               fontWeight: "500",
               borderRadius: "5px",
             }}
-            onClick={async () => {
-              await initializeUser();
-              await setUserAccount();
-            }}
+            onClick={handleCreateAccount}
           >
             Initialize Account
           </Button>
