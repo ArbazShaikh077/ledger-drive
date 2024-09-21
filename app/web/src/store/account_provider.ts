@@ -10,6 +10,7 @@ import { showToastFromRecoil } from "./toast";
 // Selector for fetching the user account
 export const accountStateSelector = selector<userAccount | null>({
   key: "account_state_selector",
+  dangerouslyAllowMutability: true,
   get: async ({ get }) => {
     try {
       console.log("Inside the account existence checking");
@@ -25,7 +26,6 @@ export const accountStateSelector = selector<userAccount | null>({
         program!.programId
       );
       const response = await program!.account.userAccount.fetch(userAccount);
-
       return response;
     } catch (e) {
       console.log(
@@ -40,13 +40,14 @@ export const accountStateSelector = selector<userAccount | null>({
 export const accountState = atom<userAccount | null>({
   key: "account_state",
   default: accountStateSelector,
+  dangerouslyAllowMutability: true,
 });
 
 // Function to create a new user account and update the atom
 export const createAndSetUserAccount = async (
   program: Program<Ledgerdrive>,
   anchorWallet: AnchorWallet
-): Promise<void> => {
+): Promise<userAccount | null> => {
   try {
     const [userAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from("user_account"), anchorWallet!.publicKey!.toBuffer()],
@@ -56,6 +57,7 @@ export const createAndSetUserAccount = async (
       [Buffer.from("root_folder"), anchorWallet!.publicKey!.toBuffer()],
       program!.programId
     );
+
     const transaction = await program!.methods
       .initializeUser()
       .accounts({
@@ -71,9 +73,7 @@ export const createAndSetUserAccount = async (
     // Fetch the newly created account
     const newUserAccount = await program.account.userAccount.fetch(userAccount);
 
-    // Update the atom with the new account
-    const setAccountState = useSetRecoilState(accountState);
-    setAccountState(newUserAccount);
+    return newUserAccount;
   } catch (e: any) {
     showToastFromRecoil({
       title: "Transaction Failed",
@@ -81,6 +81,7 @@ export const createAndSetUserAccount = async (
       variant: "destructive",
     });
     console.log(`Exception occurred while initializing the user account ${e}`);
+    return null;
   }
 };
 
@@ -88,13 +89,20 @@ export const createAndSetUserAccount = async (
 export const useCreateAndSetUserAccount = () => {
   const program = useRecoilValue(programState);
   const anchorWallet = useRecoilValue(anchorWalletState);
+  const setAccountState = useSetRecoilState(accountState);
   return async () => {
     if (!program || !anchorWallet) {
       console.error("Program or wallet is not initialized");
       return;
     }
     try {
-      await createAndSetUserAccount(program, anchorWallet);
+      // Update the atom with the new account
+
+      const newUserAccount = await createAndSetUserAccount(
+        program,
+        anchorWallet
+      );
+      setAccountState(newUserAccount);
     } catch (error) {
       console.error("Failed to create and set user account:", error);
     }

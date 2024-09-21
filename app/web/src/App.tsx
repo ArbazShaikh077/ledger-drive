@@ -11,7 +11,6 @@ import { lazy, Suspense, useMemo } from "react";
 import { clusterApiUrl } from "@solana/web3.js";
 import { RecoilRoot } from "recoil";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import { Toaster } from "./components/ui/toaster";
 import { ToastProvider } from "./store/toast";
 
 const SharedWithMe = lazy(() => import("./pages/SharedWithMe"));
@@ -48,7 +47,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-window.Buffer = Buffer;
+
 function App() {
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
